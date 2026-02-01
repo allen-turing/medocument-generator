@@ -177,6 +177,7 @@ export function PrescriptionPreview({ prescription, doctorProfile }: Prescriptio
                 src={doctorProfile.logoUrl}
                 alt="Clinic Logo"
                 className="prescription-logo"
+                crossOrigin="anonymous"
               />
             ) : (
               <div style={{
