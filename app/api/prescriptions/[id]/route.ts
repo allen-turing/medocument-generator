@@ -80,6 +80,9 @@ export async function PUT(
       followUp,
       doctorAdvice,
       medicines = [],
+      doctorName,
+      doctorQualifications,
+      doctorRegId,
     } = body;
 
     // Delete existing medicines and recreate
@@ -106,6 +109,9 @@ export async function PUT(
         labTests,
         followUp,
         doctorAdvice,
+        doctorName,
+        doctorQualifications,
+        doctorRegId,
         medicines: {
           create: medicines.map((med: { name: string; dosage?: string; instructions?: string }, index: number) => ({
             serialNo: index + 1,

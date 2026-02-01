@@ -28,10 +28,19 @@ export default async function PreviewPage({ params }: PreviewPageProps) {
     notFound();
   }
 
-  // Get doctor profile
-  const doctorProfile = await prisma.doctorProfile.findUnique({
-    where: { userId: session?.user?.id },
+  // Get user profile for fallback logo if needed
+  const user = await prisma.user.findUnique({
+    where: { id: session?.user?.id },
+    select: { logoUrl: true }
   });
+
+  // Construct doctor profile object from prescription snapshot or user default
+  const doctorProfile = {
+    name: prescription.doctorName || '',
+    qualifications: prescription.doctorQualifications || '',
+    registrationId: prescription.doctorRegId || '',
+    logoUrl: user?.logoUrl || null, // Priority: User's selected logo > Default handled in component
+  };
 
   return (
     <div className="animate-fade-in">

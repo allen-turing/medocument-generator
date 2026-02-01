@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { PrescriptionForm } from '@/components/PrescriptionForm';
+import { DeletePrescriptionButton } from '@/components/DeletePrescriptionButton';
 import { PrescriptionFormData } from '@/lib/types';
 import Link from 'next/link';
 
@@ -37,6 +38,36 @@ export default async function PrescriptionPage({ params }: PrescriptionPageProps
     notFound();
   }
 
+  // Fetch user details for defaults (Autofill)
+  let userDefaults = null;
+  if (session?.user?.id) {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        name: true,
+        qualifications: true,
+        registrationId: true,
+        logoUrl: true,
+        defaultPatientAge: true,
+        defaultPatientGender: true,
+        defaultPatientHeight: true,
+        defaultPatientWeight: true,
+      }
+    });
+    if (user) {
+      userDefaults = {
+        name: user.name,
+        qualifications: user.qualifications,
+        registrationId: user.registrationId,
+        logoUrl: user.logoUrl,
+        defaultPatientAge: user.defaultPatientAge,
+        defaultPatientGender: user.defaultPatientGender,
+        defaultPatientHeight: user.defaultPatientHeight,
+        defaultPatientWeight: user.defaultPatientWeight,
+      };
+    }
+  }
+
   // Convert to form data format
   const formData: PrescriptionFormData = {
     patientName: prescription.patientName,
@@ -61,6 +92,10 @@ export default async function PrescriptionPage({ params }: PrescriptionPageProps
     labTests: prescription.labTests || '',
     followUp: prescription.followUp || '',
     doctorAdvice: prescription.doctorAdvice || '',
+    // Include existing doctor details
+    doctorName: prescription.doctorName || '',
+    doctorQualifications: prescription.doctorQualifications || '',
+    doctorRegId: prescription.doctorRegId || '',
   };
 
   if (formData.medicines.length === 0) {
@@ -87,19 +122,23 @@ export default async function PrescriptionPage({ params }: PrescriptionPageProps
           </h1>
           <p className="text-gray-500">Rx ID: {prescription.rxId}</p>
         </div>
-        <Link href={`/dashboard/${id}/preview`} className="btn btn-primary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-          Preview & Download
-        </Link>
+        <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+          <Link href={`/dashboard/${id}/preview`} className="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            Preview & Download
+          </Link>
+          <DeletePrescriptionButton prescriptionId={id} rxId={prescription.rxId} />
+        </div>
       </div>
 
       <PrescriptionForm
         mode="edit"
         initialData={formData}
         prescriptionId={id}
+        userDefaults={userDefaults}
       />
     </div>
   );

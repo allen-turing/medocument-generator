@@ -55,6 +55,9 @@ export async function POST(request: NextRequest) {
       followUp,
       doctorAdvice,
       medicines = [],
+      doctorName,
+      doctorQualifications,
+      doctorRegId,
     } = body;
 
     // Generate unique Rx ID
@@ -80,6 +83,9 @@ export async function POST(request: NextRequest) {
         labTests,
         followUp,
         doctorAdvice,
+        doctorName,
+        doctorQualifications,
+        doctorRegId,
         medicines: {
           create: medicines.map((med: { name: string; dosage?: string; instructions?: string }, index: number) => ({
             serialNo: index + 1,

@@ -1,20 +1,44 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Medicine, defaultPrescriptionFormData, PrescriptionFormData } from '@/lib/types';
+import { Plus, X, Upload, User, FileText, Activity, AlertCircle, Save, Check } from 'lucide-react';
 
 interface PrescriptionFormProps {
   initialData?: PrescriptionFormData;
   prescriptionId?: string;
   mode: 'create' | 'edit';
+  userName?: string;
+  userDefaults?: any; // Kept for compatibility, but logic mainly uses fetched doctors
 }
 
-export function PrescriptionForm({ initialData, prescriptionId, mode }: PrescriptionFormProps) {
+interface DoctorProfile {
+  id: string;
+  name: string;
+  qualifications: string;
+  specialty: string;
+  registrationId: string;
+  logoUrl: string | null;
+}
+
+export function PrescriptionForm({ initialData, prescriptionId, mode, userName, userDefaults }: PrescriptionFormProps) {
   const router = useRouter();
-  const [formData, setFormData] = useState<PrescriptionFormData>(
-    initialData || defaultPrescriptionFormData
-  );
+
+  // Initialize with defaults if creating new
+  const initial = initialData || {
+    ...defaultPrescriptionFormData,
+    patientName: userName || '',
+    doctorName: '',
+    doctorQualifications: '',
+    doctorRegId: '',
+    patientAge: userDefaults?.defaultPatientAge || defaultPrescriptionFormData.patientAge,
+    patientGender: userDefaults?.defaultPatientGender || defaultPrescriptionFormData.patientGender,
+    patientHeight: userDefaults?.defaultPatientHeight || defaultPrescriptionFormData.patientHeight,
+    patientWeight: userDefaults?.defaultPatientWeight || defaultPrescriptionFormData.patientWeight,
+  };
+
+  const [formData, setFormData] = useState<PrescriptionFormData>(initial);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [savedMessage, setSavedMessage] = useState('');
@@ -22,6 +46,39 @@ export function PrescriptionForm({ initialData, prescriptionId, mode }: Prescrip
   const updateField = (field: keyof PrescriptionFormData, value: string | Medicine[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  // Autofill details
+  const fillDefaults = () => {
+    // Random doctor names
+    const randomDoctors = [
+      'Dr. Rajnish Manchanda', 'Dr. Anjali Gupta', 'Dr. Suresh Kumar', 'Dr. Priya Sharma',
+      'Dr. Amit Patel', 'Dr. Neha Verma', 'Dr. Rajesh Singh', 'Dr. Sunita Rao',
+      'Dr. Vikram Malhotra', 'Dr. Meera Iyer', 'Dr. Arjun Nair', 'Dr. Kavita Reddy',
+      'Dr. Sanjay Kapoor', 'Dr. Pooja Joshi', 'Dr. Rahul Khanna', 'Dr. Deepak Chopra',
+      'Dr. Swati Deshpande', 'Dr. Manish Agarwal', 'Dr. Ritu Dalal', 'Dr. Vivek Oberoi',
+    ];
+    const randomName = randomDoctors[Math.floor(Math.random() * randomDoctors.length)];
+
+    // Doctor Details - random name with dynamically generated qualifications and reg ID
+    const updates: Partial<PrescriptionFormData> = {
+      doctorName: randomName,
+      doctorQualifications: 'MBBS - General Medicine',
+      doctorRegId: `REG-${Date.now()}`,
+    };
+
+    // Patient Details (if defaults exist)
+    if (userDefaults?.defaultPatientAge) updates.patientAge = userDefaults.defaultPatientAge;
+    if (userDefaults?.defaultPatientGender) updates.patientGender = userDefaults.defaultPatientGender;
+    if (userDefaults?.defaultPatientHeight) updates.patientHeight = userDefaults.defaultPatientHeight;
+    if (userDefaults?.defaultPatientWeight) updates.patientWeight = userDefaults.defaultPatientWeight;
+
+    setFormData(prev => ({
+      ...prev,
+      ...updates
+    }));
+  };
+
+  // ... rest of medicine logic ...
 
   const addMedicine = () => {
     const newMedicine: Medicine = {
@@ -108,18 +165,14 @@ export function PrescriptionForm({ initialData, prescriptionId, mode }: Prescrip
     <div className="prescription-form">
       {error && (
         <div className="alert alert-error mb-6">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-          </svg>
+          <AlertCircle size={20} />
           {error}
         </div>
       )}
 
       {savedMessage && (
         <div className="alert alert-success mb-6">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
+          <Check size={20} />
           {savedMessage}
         </div>
       )}
@@ -127,10 +180,7 @@ export function PrescriptionForm({ initialData, prescriptionId, mode }: Prescrip
       {/* Patient Information */}
       <div className="form-section">
         <h2 className="form-section-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
+          <User size={20} />
           Patient Information
         </h2>
         <div className="form-row">
@@ -205,30 +255,27 @@ export function PrescriptionForm({ initialData, prescriptionId, mode }: Prescrip
               placeholder="e.g., 178"
             />
           </div>
-          <div className="form-group">
+          <div className="form-group" style={{ flex: 1 }}>
             <label htmlFor="patientWeight" className="form-label">Weight (kgs)</label>
             <input
-              type="number"
+              type="text"
               id="patientWeight"
               className="form-input"
-              value={formData.patientWeight}
+              value={formData.patientWeight || ''}
               onChange={(e) => updateField('patientWeight', e.target.value)}
               placeholder="e.g., 71"
             />
           </div>
         </div>
+        <p className="text-xs text-gray-500 mt-2 px-1">
+          Tip: Configure default values in your <a href="/dashboard/profile" className="text-blue-500 hover:underline">Profile</a>.
+        </p>
       </div>
 
       {/* Diagnosis */}
       <div className="form-section">
         <h2 className="form-section-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-            <polyline points="10 9 9 9 8 9"></polyline>
-          </svg>
+          <Activity size={20} />
           Diagnosis
         </h2>
         <div className="form-row">
@@ -279,13 +326,67 @@ export function PrescriptionForm({ initialData, prescriptionId, mode }: Prescrip
         </div>
       </div>
 
+      {/* Doctor Information - Simplified */}
+      <div className="form-section">
+        <h2 className="form-section-title">
+          <User size={20} />
+          Doctor Details
+        </h2>
+
+        {/* Doctor Details Inputs */}
+        <div className="form-row">
+          <div className="form-group" style={{ flex: 2 }}>
+            <label htmlFor="doctorName" className="form-label">Doctor Name</label>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <input
+                type="text"
+                id="doctorName"
+                className="form-input"
+                style={{ flex: 1, minWidth: '150px' }}
+                value={formData.doctorName || ''}
+                onChange={(e) => updateField('doctorName', e.target.value)}
+                placeholder="Dr. Name"
+              />
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                style={{ whiteSpace: 'nowrap' }}
+                onClick={fillDefaults}
+                title="Auto Fill Doctor Details"
+              >
+                Auto Fill Doctor
+              </button>
+            </div>
+          </div>
+          <div className="form-group" style={{ flex: 1 }}>
+            <label htmlFor="doctorQualifications" className="form-label">Qualifications</label>
+            <input
+              type="text"
+              id="doctorQualifications"
+              className="form-input"
+              value={formData.doctorQualifications || ''}
+              onChange={(e) => updateField('doctorQualifications', e.target.value)}
+              placeholder="MBBS, MD"
+            />
+          </div>
+          <div className="form-group" style={{ flex: 1 }}>
+            <label htmlFor="doctorRegId" className="form-label">Reg ID</label>
+            <input
+              type="text"
+              id="doctorRegId"
+              className="form-input"
+              value={formData.doctorRegId || ''}
+              onChange={(e) => updateField('doctorRegId', e.target.value)}
+              placeholder="Reg ID"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Medicines */}
       <div className="form-section">
         <h2 className="form-section-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19.5 12.5c0 .828-.224 1.603-.61 2.267l-8.623 8.622c-1.562 1.562-4.094 1.562-5.656 0-1.562-1.562-1.562-4.094 0-5.656l8.623-8.623c.664-.386 1.439-.61 2.266-.61a4.5 4.5 0 0 1 0 9z" />
-            <path d="m9.5 5.5 9 9" />
-          </svg>
+          <FileText size={20} />
           Prescribed Medicines
         </h2>
 
@@ -339,10 +440,7 @@ export function PrescriptionForm({ initialData, prescriptionId, mode }: Prescrip
                       disabled={formData.medicines.length === 1}
                       title="Remove medicine"
                     >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                      </svg>
+                      <X size={18} />
                     </button>
                   </td>
                 </tr>
@@ -356,11 +454,7 @@ export function PrescriptionForm({ initialData, prescriptionId, mode }: Prescrip
           onClick={addMedicine}
           className="btn btn-secondary mt-4"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="16"></line>
-            <line x1="8" y1="12" x2="16" y2="12"></line>
-          </svg>
+          <Plus size={18} className="mr-2" />
           Add Medicine
         </button>
       </div>
@@ -368,10 +462,7 @@ export function PrescriptionForm({ initialData, prescriptionId, mode }: Prescrip
       {/* Additional Information */}
       <div className="form-section">
         <h2 className="form-section-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
+          <Activity size={20} />
           Additional Information
         </h2>
         <div className="form-row">
@@ -448,10 +539,7 @@ export function PrescriptionForm({ initialData, prescriptionId, mode }: Prescrip
               className="btn btn-primary"
               disabled={saving}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
+              <FileText size={18} className="mr-2" />
               Preview & Download PDF
             </button>
           )}

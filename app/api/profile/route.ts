@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET - Fetch doctor profile
+// GET - Fetch user profile
 export async function GET() {
   try {
     const session = await auth();
@@ -11,15 +11,28 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const profile = await prisma.doctorProfile.findUnique({
-      where: { userId: session.user.id },
+    // Fetch from User model
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        name: true,
+        email: true,
+        qualifications: true,
+        specialty: true,
+        registrationId: true,
+        logoUrl: true,
+        defaultPatientAge: true,
+        defaultPatientGender: true,
+        defaultPatientHeight: true,
+        defaultPatientWeight: true,
+      }
     });
 
-    if (!profile) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json(profile);
+    return NextResponse.json(user);
   } catch (error) {
     console.error('Error fetching profile:', error);
     return NextResponse.json(
@@ -29,7 +42,7 @@ export async function GET() {
   }
 }
 
-// PUT - Update doctor profile
+// PUT - Update user profile
 export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
@@ -39,28 +52,47 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, qualifications, specialty, registrationId, logoUrl } = body;
+    const {
+      name,
+      qualifications,
+      specialty,
+      registrationId,
+      logoUrl,
+      defaultPatientAge,
+      defaultPatientGender,
+      defaultPatientHeight,
+      defaultPatientWeight
+    } = body;
 
-    const profile = await prisma.doctorProfile.upsert({
-      where: { userId: session.user.id },
-      update: {
+    // Update User model
+    const user = await prisma.user.update({
+      where: { id: session.user.id },
+      data: {
         name,
         qualifications,
         specialty,
         registrationId,
         logoUrl,
+        defaultPatientAge,
+        defaultPatientGender,
+        defaultPatientHeight,
+        defaultPatientWeight,
       },
-      create: {
-        userId: session.user.id,
-        name: name || session.user.name || '',
-        qualifications: qualifications || 'MBBS',
-        specialty: specialty || 'General Medicine',
-        registrationId: registrationId || `REG-${Date.now()}`,
-        logoUrl,
-      },
+      select: {
+        name: true,
+        email: true,
+        qualifications: true,
+        specialty: true,
+        registrationId: true,
+        logoUrl: true,
+        defaultPatientAge: true,
+        defaultPatientGender: true,
+        defaultPatientHeight: true,
+        defaultPatientWeight: true,
+      }
     });
 
-    return NextResponse.json(profile);
+    return NextResponse.json(user);
   } catch (error) {
     console.error('Error updating profile:', error);
     return NextResponse.json(

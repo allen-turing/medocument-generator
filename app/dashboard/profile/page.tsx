@@ -3,19 +3,22 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
-interface DoctorProfile {
-  id: string;
+interface UserProfile {
   name: string;
-  qualifications: string;
-  specialty: string;
-  registrationId: string;
-  logoUrl: string | null;
+  email: string;
+  qualifications?: string;
+  specialty?: string;
+  registrationId?: string;
+  logoUrl?: string;
+  defaultPatientAge?: number | string;
+  defaultPatientGender?: string;
+  defaultPatientHeight?: number | string;
+  defaultPatientWeight?: number | string;
 }
 
 export default function ProfilePage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [profile, setProfile] = useState<DoctorProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -24,10 +27,15 @@ export default function ProfilePage() {
 
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     qualifications: '',
     specialty: '',
     registrationId: '',
     logoUrl: '',
+    defaultPatientAge: '',
+    defaultPatientGender: '',
+    defaultPatientHeight: '',
+    defaultPatientWeight: '',
   });
 
   useEffect(() => {
@@ -39,13 +47,17 @@ export default function ProfilePage() {
       const response = await fetch('/api/profile');
       if (response.ok) {
         const data = await response.json();
-        setProfile(data);
         setFormData({
           name: data.name || '',
+          email: data.email || '',
           qualifications: data.qualifications || '',
           specialty: data.specialty || '',
           registrationId: data.registrationId || '',
           logoUrl: data.logoUrl || '',
+          defaultPatientAge: data.defaultPatientAge || '',
+          defaultPatientGender: data.defaultPatientGender || '',
+          defaultPatientHeight: data.defaultPatientHeight || '',
+          defaultPatientWeight: data.defaultPatientWeight || '',
         });
       }
     } catch (err) {
@@ -65,12 +77,20 @@ export default function ProfilePage() {
       const response = await fetch('/api/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          qualifications: formData.qualifications,
+          specialty: formData.specialty,
+          registrationId: formData.registrationId,
+          logoUrl: formData.logoUrl,
+          defaultPatientAge: formData.defaultPatientAge ? Number(formData.defaultPatientAge) : null,
+          defaultPatientGender: formData.defaultPatientGender,
+          defaultPatientHeight: formData.defaultPatientHeight ? Number(formData.defaultPatientHeight) : null,
+          defaultPatientWeight: formData.defaultPatientWeight ? Number(formData.defaultPatientWeight) : null,
+        }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to save profile');
-      }
+      if (!response.ok) throw new Error('Failed to save profile');
 
       setSuccess('Profile saved successfully!');
       router.refresh();
@@ -86,34 +106,19 @@ export default function ProfilePage() {
     if (!file) return;
 
     setUploading(true);
-    setError('');
-
     try {
       const formData = new FormData();
       formData.append('file', file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to upload');
-      }
-
+      const response = await fetch('/api/upload', { method: 'POST', body: formData });
+      if (!response.ok) throw new Error('Upload failed');
       const data = await response.json();
-      setFormData((prev) => ({ ...prev, logoUrl: data.url }));
-      setSuccess('Logo uploaded! Don\'t forget to save your profile.');
+      setFormData(prev => ({ ...prev, logoUrl: data.url }));
+      setSuccess('Logo uploaded! Save to persist changes.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload logo');
+      setError('Failed to upload logo');
     } finally {
       setUploading(false);
     }
-  };
-
-  const removeLogo = () => {
-    setFormData((prev) => ({ ...prev, logoUrl: '' }));
   };
 
   if (loading) {
@@ -128,8 +133,8 @@ export default function ProfilePage() {
     <div className="animate-fade-in">
       <div className="dashboard-header">
         <div>
-          <h1 className="dashboard-title">Doctor Profile</h1>
-          <p className="text-gray-500">Manage your professional information and clinic logo</p>
+          <h1 className="dashboard-title">Account Settings</h1>
+          <p className="text-gray-500">Manage your account information.</p>
         </div>
       </div>
 
@@ -152,14 +157,14 @@ export default function ProfilePage() {
       )}
 
       <form onSubmit={handleSubmit}>
-        {/* Professional Information */}
+        {/* Account Information */}
         <div className="form-section">
           <h2 className="form-section-title">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
-            Professional Information
+            Personal Information
           </h2>
 
           <div className="form-row">
@@ -171,44 +176,78 @@ export default function ProfilePage() {
                 className="form-input"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Dr. Rajnish Manchanda"
+                placeholder="Your Name"
                 required
               />
             </div>
             <div className="form-group">
-              <label htmlFor="qualifications" className="form-label">Qualifications</label>
+              <label className="form-label">Email</label>
               <input
-                type="text"
-                id="qualifications"
+                type="email"
                 className="form-input"
-                value={formData.qualifications}
-                onChange={(e) => setFormData({ ...formData, qualifications: e.target.value })}
-                placeholder="MBBS, MD"
+                value={formData.email}
+                disabled
+                style={{ backgroundColor: 'var(--color-gray-100)', cursor: 'not-allowed' }}
               />
             </div>
           </div>
+        </div>
 
-          <div className="form-row">
+        {/* Patient Defaults */}
+        <div className="form-section">
+          <h2 className="form-section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <line x1="19" y1="8" x2="19" y2="14"></line>
+              <line x1="22" y1="11" x2="16" y2="11"></line>
+            </svg>
+            Patient Defaults
+          </h2>
+          <p className="text-xs text-gray-500 mb-4">These values will be auto-filled when creating new prescriptions.</p>
+
+          <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
             <div className="form-group">
-              <label htmlFor="specialty" className="form-label">Specialty</label>
+              <label className="form-label">Age (Years)</label>
               <input
-                type="text"
-                id="specialty"
+                type="number"
                 className="form-input"
-                value={formData.specialty}
-                onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
-                placeholder="Family Medicine"
+                value={formData.defaultPatientAge}
+                onChange={(e) => setFormData({ ...formData, defaultPatientAge: e.target.value })}
+                placeholder="e.g., 27"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="registrationId" className="form-label">Registration ID</label>
-              <input
-                type="text"
-                id="registrationId"
+              <label className="form-label">Gender</label>
+              <select
                 className="form-input"
-                value={formData.registrationId}
-                onChange={(e) => setFormData({ ...formData, registrationId: e.target.value })}
-                placeholder="DMC/R/858"
+                value={formData.defaultPatientGender}
+                onChange={(e) => setFormData({ ...formData, defaultPatientGender: e.target.value })}
+              >
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Height (cms)</label>
+              <input
+                type="number"
+                className="form-input"
+                value={formData.defaultPatientHeight}
+                onChange={(e) => setFormData({ ...formData, defaultPatientHeight: e.target.value })}
+                placeholder="e.g., 178"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Weight (kgs)</label>
+              <input
+                type="number"
+                className="form-input"
+                value={formData.defaultPatientWeight}
+                onChange={(e) => setFormData({ ...formData, defaultPatientWeight: e.target.value })}
+                placeholder="e.g., 71"
               />
             </div>
           </div>
@@ -217,69 +256,34 @@ export default function ProfilePage() {
         {/* Logo Upload */}
         <div className="form-section">
           <h2 className="form-section-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              <circle cx="8.5" cy="8.5" r="1.5"></circle>
-              <polyline points="21 15 16 10 5 21"></polyline>
-            </svg>
-            Clinic/Hospital Logo
+            Clinic Logo
           </h2>
-
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-6)' }}>
-            {/* Logo Preview */}
-            <div style={{
-              width: '200px',
-              height: '100px',
-              border: '2px dashed var(--color-gray-300)',
-              borderRadius: 'var(--radius-lg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'var(--color-gray-50)',
-              overflow: 'hidden'
-            }}>
-              {formData.logoUrl ? (
-                <img
-                  src={formData.logoUrl}
-                  alt="Clinic Logo"
-                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                />
-              ) : (
-                <span className="text-gray-500">No logo uploaded</span>
-              )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <div style={{ width: '100px', height: '100px', border: '1px dashed #ccc', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px', overflow: 'hidden' }}>
+              <img
+                src={formData.logoUrl || '/assets/default-logo.png'}
+                alt="Logo"
+                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+              />
             </div>
-
-            {/* Upload Controls */}
             <div>
               <input
                 type="file"
                 ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
                 onChange={handleLogoUpload}
-                accept="image/png,image/jpeg,image/jpg,image/webp"
                 style={{ display: 'none' }}
               />
-              <div style={{ display: 'flex', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="btn btn-secondary"
-                  disabled={uploading}
-                >
-                  {uploading ? 'Uploading...' : 'Upload Logo'}
-                </button>
-                {formData.logoUrl && (
-                  <button
-                    type="button"
-                    onClick={removeLogo}
-                    className="btn btn-ghost"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-              <p className="text-sm text-gray-500">
-                PNG, JPG, or WebP. Max 5MB.
-              </p>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+              >
+                {uploading ? 'Uploading...' : 'Upload New Logo'}
+              </button>
+              <p className="text-xs text-gray-500 mt-2">Will be used as default on prescriptions</p>
             </div>
           </div>
         </div>
@@ -297,14 +301,7 @@ export default function ProfilePage() {
                 Saving...
               </>
             ) : (
-              <>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                  <polyline points="7 3 7 8 15 8"></polyline>
-                </svg>
-                Save Profile
-              </>
+              'Save Changes'
             )}
           </button>
         </div>

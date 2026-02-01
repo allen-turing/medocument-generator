@@ -4,22 +4,21 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "role" TEXT NOT NULL DEFAULT 'USER',
+    "isApproved" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "updatedAt" DATETIME NOT NULL,
+    "qualifications" TEXT,
+    "specialty" TEXT,
+    "registrationId" TEXT,
+    "logoUrl" TEXT
 );
 
 -- CreateTable
-CREATE TABLE "DoctorProfile" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "userId" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "qualifications" TEXT NOT NULL,
-    "specialty" TEXT NOT NULL,
-    "registrationId" TEXT NOT NULL,
-    "logoUrl" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "DoctorProfile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE "SystemSettings" (
+    "key" TEXT NOT NULL PRIMARY KEY,
+    "value" TEXT NOT NULL,
+    "description" TEXT
 );
 
 -- CreateTable
@@ -34,6 +33,9 @@ CREATE TABLE "Prescription" (
     "patientGender" TEXT,
     "patientHeight" INTEGER,
     "patientWeight" INTEGER,
+    "doctorName" TEXT,
+    "doctorQualifications" TEXT,
+    "doctorRegId" TEXT,
     "prescriptionDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "diagnosis" TEXT,
     "diagnosisCode" TEXT,
@@ -63,9 +65,6 @@ CREATE TABLE "Medicine" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "DoctorProfile_userId_key" ON "DoctorProfile"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Prescription_rxId_key" ON "Prescription"("rxId");

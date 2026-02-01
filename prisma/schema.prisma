@@ -16,29 +16,39 @@ model User {
   email         String         @unique
   password      String
   name          String
+  role          String         @default("USER") // "USER" or "ADMIN"
+  isApproved    Boolean        @default(true)   // Default true to allow initial setup, logic will handle "require approval" check
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  doctorProfile DoctorProfile?
+  
+  // Doctor Details (Defaults)
+  qualifications String?
+  specialty      String?
+  registrationId String?
+  logoUrl        String?
+  
+  // Default Patient Details (for autofill)
+  defaultPatientAge    Int?
+  defaultPatientGender String?
+  defaultPatientHeight Int?
+  defaultPatientWeight Int?
+  
+
+  
   prescriptions Prescription[]
 }
 
-model DoctorProfile {
-  id             String  @id @default(cuid())
-  userId         String  @unique
-  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name           String
-  qualifications String
-  specialty      String
-  registrationId String
-  logoUrl        String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+model SystemSettings {
+  key         String  @id
+  value       String  // JSON string or simple value
+  description String?
 }
 
 model Prescription {
   id                 String     @id @default(cuid())
   userId             String
   user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   rxId               String     @unique @default(cuid())
   status             String     @default("DRAFT") // DRAFT or PUBLISHED
   
@@ -49,6 +59,11 @@ model Prescription {
   patientGender      String?
   patientHeight      Int?       // in cms
   patientWeight      Int?       // in kgs
+  
+  // Doctor Information (Snapshot)
+  doctorName         String?
+  doctorQualifications String?
+  doctorRegId        String?
   prescriptionDate   DateTime   @default(now())
   
   // Diagnosis

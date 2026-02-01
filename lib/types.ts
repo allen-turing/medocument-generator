@@ -65,6 +65,11 @@ export interface PrescriptionFormData {
   patientWeight: string;
   prescriptionDate: string;
 
+  // Doctor Information (Snapshot)
+  doctorName?: string;
+  doctorQualifications?: string;
+  doctorRegId?: string;
+
   // Diagnosis
   diagnosisCode: string;
   diagnosis: string;
@@ -88,6 +93,9 @@ export const defaultPrescriptionFormData: PrescriptionFormData = {
   patientGender: '',
   patientHeight: '',
   patientWeight: '',
+  doctorName: '',
+  doctorQualifications: '',
+  doctorRegId: '',
   prescriptionDate: new Date().toISOString().split('T')[0],
   diagnosisCode: '',
   diagnosis: '',

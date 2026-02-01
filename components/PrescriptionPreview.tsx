@@ -33,6 +33,9 @@ interface Prescription {
   followUp: string | null;
   doctorAdvice: string | null;
   medicines: Medicine[];
+  doctorName: string | null;
+  doctorQualifications: string | null;
+  doctorRegId: string | null;
 }
 
 interface DoctorProfile {
@@ -160,40 +163,24 @@ export function PrescriptionPreview({ prescription, doctorProfile }: Prescriptio
             <div style={{ display: 'flex', alignItems: 'flex-start' }}>
               <span className="rx-symbol">Rx</span>
               <div className="doctor-info">
-                <p className="doctor-name">{doctorProfile?.name || 'Doctor Name'}</p>
+                <p className="doctor-name">{prescription.doctorName || doctorProfile?.name || 'Doctor Name'}</p>
                 <p className="doctor-qualifications">
-                  {doctorProfile?.qualifications || 'MBBS'} - {doctorProfile?.specialty || 'General Medicine'}
+                  {prescription.doctorQualifications || doctorProfile?.qualifications || 'MBBS - General Medicine'}
                 </p>
                 <p className="doctor-qualifications">
-                  Reg Id : {doctorProfile?.registrationId || 'REG/XXX'}
+                  Reg Id : {prescription.doctorRegId || doctorProfile?.registrationId || 'REG/XXX'}
                 </p>
                 <p className="doctor-qualifications">
                   Rx ID : {prescription.rxId}
                 </p>
               </div>
             </div>
-            {doctorProfile?.logoUrl ? (
-              <img
-                src={doctorProfile.logoUrl}
-                alt="Clinic Logo"
-                className="prescription-logo"
-                crossOrigin="anonymous"
-              />
-            ) : (
-              <div style={{
-                width: '120px',
-                height: '50px',
-                background: 'var(--color-gray-100)',
-                borderRadius: 'var(--radius-md)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--color-gray-400)',
-                fontSize: 'var(--font-size-xs)'
-              }}>
-                Logo
-              </div>
-            )}
+            <img
+              src={doctorProfile?.logoUrl || '/assets/default-logo.png'}
+              alt="Clinic Logo"
+              className="prescription-logo"
+              crossOrigin="anonymous"
+            />
           </div>
 
           {/* Patient Info */}

@@ -50,14 +50,16 @@ export default async function DashboardLayout({
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
-                  Profile
+                  {session.user.name || session.user.email}
                 </Link>
               </li>
-              <li>
-                <span className="nav-link" style={{ color: 'var(--color-gray-500)' }}>
-                  {session.user.name || session.user.email}
-                </span>
-              </li>
+              {session.user.role === 'ADMIN' && (
+                <li>
+                  <Link href="/dashboard/admin" className="nav-link text-primary">
+                    Admin
+                  </Link>
+                </li>
+              )}
               <li>
                 <SignOutButton />
               </li>

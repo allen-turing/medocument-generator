@@ -41,7 +41,13 @@ export default function RegisterPage() {
       if (!response.ok) {
         setError(data.error || 'Registration failed');
       } else {
-        router.push('/login?registered=true');
+        // Check if approval is required
+        if (data.isApproved === false) {
+          // Show pending approval message
+          router.push('/login?registered=pending');
+        } else {
+          router.push('/login?registered=true');
+        }
       }
     } catch {
       setError('An error occurred. Please try again.');
