@@ -206,7 +206,7 @@ export default function ProfilePage() {
           </h2>
           <p className="text-xs text-gray-500 mb-4">These values will be auto-filled when creating new prescriptions.</p>
 
-          <div className="form-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+          <div className="form-row patient-defaults-grid">
             <div className="form-group">
               <label className="form-label">Age (Years)</label>
               <input

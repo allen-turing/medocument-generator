@@ -390,7 +390,8 @@ export function PrescriptionForm({ initialData, prescriptionId, mode, userName, 
           Prescribed Medicines
         </h2>
 
-        <div className="table-wrapper">
+        {/* Desktop Table View */}
+        <div className="table-wrapper medicine-table-desktop">
           <table className="table">
             <thead>
               <tr>
@@ -447,6 +448,58 @@ export function PrescriptionForm({ initialData, prescriptionId, mode, userName, 
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="medicine-cards-mobile">
+          {formData.medicines.map((medicine, index) => (
+            <div key={index} className="medicine-card">
+              <div className="medicine-card-header">
+                <span className="medicine-card-number">#{medicine.serialNo}</span>
+                <button
+                  type="button"
+                  onClick={() => removeMedicine(index)}
+                  className="btn btn-ghost btn-icon btn-sm"
+                  disabled={formData.medicines.length === 1}
+                  title="Remove medicine"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Medicine Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={medicine.name}
+                  onChange={(e) => updateMedicine(index, 'name', e.target.value)}
+                  placeholder="e.g., Mecofol-OD Tablet"
+                />
+              </div>
+              <div className="medicine-card-row">
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Dosage</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={medicine.dosage || ''}
+                    onChange={(e) => updateMedicine(index, 'dosage', e.target.value)}
+                    placeholder="e.g., 0-1-0"
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Instructions</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={medicine.instructions || ''}
+                  onChange={(e) => updateMedicine(index, 'instructions', e.target.value)}
+                  placeholder="e.g., 2 Months; After Meal"
+                />
+              </div>
+            </div>
+          ))}
         </div>
 
         <button
