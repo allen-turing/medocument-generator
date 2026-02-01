@@ -160,9 +160,6 @@ export function PrescriptionCard({
           <span className="prescription-card-date">
             {formatDate(updatedAt)}
           </span>
-          <span className="btn btn-ghost btn-sm">
-            View →
-          </span>
         </div>
       </Link>
 
