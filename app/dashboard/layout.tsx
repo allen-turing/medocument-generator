@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import Link from 'next/link';
 import { SignOutButton } from '@/components/SignOutButton';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default async function DashboardLayout({
   children,
@@ -59,6 +60,9 @@ export default async function DashboardLayout({
               </li>
               <li>
                 <SignOutButton />
+              </li>
+              <li>
+                <ThemeToggle />
               </li>
             </ul>
           </div>

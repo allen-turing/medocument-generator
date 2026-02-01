@@ -3,7 +3,9 @@
    =================================================== */
 
 /* CSS Reset */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -20,13 +22,13 @@
   --color-primary-dark: #1d4ed8;
   --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
-  
+
   --color-secondary: #0891b2;
   --color-secondary-light: #22d3ee;
-  
+
   --color-accent: #8b5cf6;
   --color-accent-light: #a78bfa;
-  
+
   /* Semantic Colors */
   --color-success: #10b981;
   --color-success-light: #d1fae5;
@@ -36,7 +38,7 @@
   --color-error-light: #fee2e2;
   --color-info: #3b82f6;
   --color-info-light: #dbeafe;
-  
+
   /* Neutral Colors */
   --color-white: #ffffff;
   --color-gray-50: #f9fafb;
@@ -49,17 +51,17 @@
   --color-gray-700: #374151;
   --color-gray-800: #1f2937;
   --color-gray-900: #111827;
-  
+
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   --gradient-accent: linear-gradient(135deg, var(--color-accent) 0%, var(--color-primary) 100%);
   --gradient-dark: linear-gradient(135deg, var(--color-gray-800) 0%, var(--color-gray-900) 100%);
-  --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-  
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'SF Mono', 'Consolas', monospace;
-  
+
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -68,16 +70,16 @@
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 1.875rem;
   --font-size-4xl: 2.25rem;
-  
+
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  
+
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
-  
+
   /* Spacing */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -90,7 +92,7 @@
   --space-12: 3rem;
   --space-16: 4rem;
   --space-20: 5rem;
-  
+
   /* Border Radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
@@ -98,7 +100,7 @@
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
   --radius-full: 9999px;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -107,13 +109,13 @@
   --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
   --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.3);
-  
+
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-base: 200ms ease;
   --transition-slow: 300ms ease;
   --transition-smooth: 400ms cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   /* Z-index */
   --z-dropdown: 100;
   --z-sticky: 200;
@@ -121,6 +123,53 @@
   --z-modal: 400;
   --z-popover: 500;
   --z-tooltip: 600;
+}
+
+.dark {
+  /* Dark Mode Overrides */
+
+  /* Retain Primary/Secondary Hues but adjust lightness for dark background if needed */
+  /* For now keeping primary same but adjusting backgrounds/text */
+
+  --color-white: #1f2937;
+  /* inverse card bg */
+
+  /* Backgrounds */
+  --color-gray-50: #0f172a;
+  /* darker main bg */
+  --color-gray-100: #1e293b;
+  /* darker secondary bg */
+  --color-gray-200: #334155;
+  /* borders */
+  --color-gray-300: #475569;
+
+  /* Text - Inverted */
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #cbd5e1;
+  --color-gray-600: #e2e8f0;
+  --color-gray-700: #f1f5f9;
+  --color-gray-800: #f8fafc;
+  --color-gray-900: #ffffff;
+
+  /* Accents */
+  --color-primary-50: #172554;
+  --color-primary-100: #1e3a8a;
+
+  /* Shadows - stronger in dark mode */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+
+  /* Gradients */
+  --gradient-dark: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+
+  /* Specific Component Overrides */
+  .card-glass {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 }
 
 /* ===================================================
@@ -956,6 +1005,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1005,32 +1055,32 @@ body {
   .sidebar {
     display: none;
   }
-  
+
   .dashboard-main {
     padding: var(--space-4);
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .medicine-row {
     grid-template-columns: 1fr;
     gap: var(--space-2);
   }
-  
+
   .medicine-serial {
     display: none;
   }
-  
+
   .prescription-preview {
     padding: var(--space-4);
   }
-  
+
   .navbar-nav {
     display: none;
   }
-  
+
   .prescriptions-grid {
     grid-template-columns: 1fr;
   }
@@ -1040,38 +1090,109 @@ body {
    UTILITY CLASSES
    =================================================== */
 
-.text-center { text-align: center; }
-.text-right { text-align: right; }
-.text-left { text-align: left; }
+.text-center {
+  text-align: center;
+}
 
-.font-bold { font-weight: var(--font-weight-bold); }
-.font-medium { font-weight: var(--font-weight-medium); }
+.text-right {
+  text-align: right;
+}
 
-.text-sm { font-size: var(--font-size-sm); }
-.text-lg { font-size: var(--font-size-lg); }
-.text-xl { font-size: var(--font-size-xl); }
+.text-left {
+  text-align: left;
+}
 
-.text-gray-500 { color: var(--color-gray-500); }
-.text-gray-600 { color: var(--color-gray-600); }
-.text-primary { color: var(--color-primary); }
+.font-bold {
+  font-weight: var(--font-weight-bold);
+}
 
-.mt-2 { margin-top: var(--space-2); }
-.mt-4 { margin-top: var(--space-4); }
-.mt-6 { margin-top: var(--space-6); }
-.mb-2 { margin-bottom: var(--space-2); }
-.mb-4 { margin-bottom: var(--space-4); }
-.mb-6 { margin-bottom: var(--space-6); }
+.font-medium {
+  font-weight: var(--font-weight-medium);
+}
 
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.justify-center { justify-content: center; }
-.gap-2 { gap: var(--space-2); }
-.gap-4 { gap: var(--space-4); }
+.text-sm {
+  font-size: var(--font-size-sm);
+}
 
-.w-full { width: 100%; }
-.hidden { display: none; }
+.text-lg {
+  font-size: var(--font-size-lg);
+}
+
+.text-xl {
+  font-size: var(--font-size-xl);
+}
+
+.text-gray-500 {
+  color: var(--color-gray-500);
+}
+
+.text-gray-600 {
+  color: var(--color-gray-600);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.mt-2 {
+  margin-top: var(--space-2);
+}
+
+.mt-4 {
+  margin-top: var(--space-4);
+}
+
+.mt-6 {
+  margin-top: var(--space-6);
+}
+
+.mb-2 {
+  margin-bottom: var(--space-2);
+}
+
+.mb-4 {
+  margin-bottom: var(--space-4);
+}
+
+.mb-6 {
+  margin-bottom: var(--space-6);
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.gap-2 {
+  gap: var(--space-2);
+}
+
+.gap-4 {
+  gap: var(--space-4);
+}
+
+.w-full {
+  width: 100%;
+}
+
+.hidden {
+  display: none;
+}
 
 /* ===================================================
    PRINT STYLES
@@ -1081,13 +1202,13 @@ body {
   .no-print {
     display: none !important;
   }
-  
+
   .prescription-preview {
     box-shadow: none;
     margin: 0;
     padding: 0;
   }
-  
+
   body {
     background: white;
   }
