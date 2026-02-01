@@ -39,10 +39,8 @@ interface Prescription {
 }
 
 interface DoctorProfile {
-  id: string;
   name: string;
   qualifications: string;
-  specialty: string;
   registrationId: string;
   logoUrl: string | null;
 }
