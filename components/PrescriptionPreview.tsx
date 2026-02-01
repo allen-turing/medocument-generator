@@ -63,43 +63,31 @@ export function PrescriptionPreview({ prescription, doctorProfile }: Prescriptio
   };
 
   const handleDownloadPDF = async () => {
-    if (!previewRef.current) return;
-
     setDownloading(true);
 
     try {
-      const canvas = await html2canvas(previewRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-      });
+      const response = await fetch(`/api/prescriptions/${prescription.id}/pdf`);
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-      });
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF on server');
+      }
 
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      const blob = await response.blob();
 
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      // Get filename from header if possible, otherwise constructive fallback
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `Prescription_${prescription.patientName.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
 
-      // Create proper filename with patient name and date
-      const patientName = prescription.patientName.replace(/[^a-zA-Z0-9]/g, '_');
-      const date = new Date().toISOString().split('T')[0];
-      const filename = `Prescription_${patientName}_${date}.pdf`;
+      if (contentDisposition && contentDisposition.includes('filename=')) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) filename = match[1];
+      }
 
-      // Use file-saver for reliable filename in all browsers
-      const pdfBlob = pdf.output('blob');
-      saveAs(pdfBlob, filename);
+      saveAs(blob, filename);
 
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
+      console.error('Error downloading PDF:', error);
+      alert('Failed to download PDF. Please try again.');
     } finally {
       setDownloading(false);
     }
