@@ -11,7 +11,11 @@ CREATE TABLE "User" (
     "qualifications" TEXT,
     "specialty" TEXT,
     "registrationId" TEXT,
-    "logoUrl" TEXT
+    "logoUrl" TEXT,
+    "defaultPatientAge" INTEGER,
+    "defaultPatientGender" TEXT,
+    "defaultPatientHeight" INTEGER,
+    "defaultPatientWeight" INTEGER
 );
 
 -- CreateTable
