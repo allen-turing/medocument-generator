@@ -126,49 +126,95 @@
 }
 
 .dark {
-  /* Dark Mode Overrides */
+  /* OLED-Optimized Dark Mode - True black backgrounds for battery savings */
 
-  /* Retain Primary/Secondary Hues but adjust lightness for dark background if needed */
-  /* For now keeping primary same but adjusting backgrounds/text */
+  /* Card/Surface backgrounds - Very dark grays for slight contrast */
+  --color-white: #0a0a0a;
 
-  --color-white: #1f2937;
-  /* inverse card bg */
+  /* Backgrounds - True blacks and near-blacks */
+  --color-gray-50: #000000;
+  /* Pure black - main bg */
+  --color-gray-100: #0a0a0a;
+  /* Near black - secondary bg */
+  --color-gray-200: #1a1a1a;
+  /* Borders - subtle */
+  --color-gray-300: #2a2a2a;
+  /* Borders - stronger */
 
-  /* Backgrounds */
-  --color-gray-50: #0f172a;
-  /* darker main bg */
-  --color-gray-100: #1e293b;
-  /* darker secondary bg */
-  --color-gray-200: #334155;
-  /* borders */
-  --color-gray-300: #475569;
-
-  /* Text - Inverted */
-  --color-gray-400: #94a3b8;
-  --color-gray-500: #cbd5e1;
-  --color-gray-600: #e2e8f0;
-  --color-gray-700: #f1f5f9;
-  --color-gray-800: #f8fafc;
+  /* Text - High contrast for readability */
+  --color-gray-400: #737373;
+  --color-gray-500: #a3a3a3;
+  --color-gray-600: #d4d4d4;
+  --color-gray-700: #e5e5e5;
+  --color-gray-800: #f5f5f5;
   --color-gray-900: #ffffff;
 
-  /* Accents */
-  --color-primary-50: #172554;
-  --color-primary-100: #1e3a8a;
+  /* Accents - Keep primary vibrant for visibility */
+  --color-primary-50: #0a1628;
+  --color-primary-100: #172554;
 
-  /* Shadows - stronger in dark mode */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  /* Shadows - Subtle on pure black */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.8);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.7), 0 2px 4px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -2px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
 
-  /* Gradients */
-  --gradient-dark: linear-gradient(135deg, #020617 0%, #0f172a 100%);
-  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+  /* Gradients - True black based */
+  --gradient-dark: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
 
-  /* Specific Component Overrides */
+  /* OLED-specific component overrides */
   .card-glass {
-    background: rgba(30, 41, 59, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(10, 10, 10, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .navbar {
+    background: #000000;
+    border-bottom: 1px solid #1a1a1a;
+  }
+
+  .form-section,
+  .prescription-card,
+  .card {
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    background: #0a0a0a;
+    border-color: #2a2a2a;
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  }
+
+  .table th {
+    background: #0a0a0a;
+  }
+
+  .medicine-card {
+    background: #0a0a0a;
+    border-color: #1a1a1a;
+  }
+
+  .mobile-nav-menu {
+    background: #000000;
+  }
+
+  .mobile-nav-header {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  }
+
+  .mobile-nav-overlay {
+    background: rgba(0, 0, 0, 0.8);
   }
 }
 
