@@ -263,7 +263,7 @@ export function PrescriptionPreview({ prescription, doctorProfile }: Prescriptio
                 </tr>
               </thead>
               <tbody>
-                {prescription.medicines.map((medicine) => (
+                {prescription.medicines.map((medicine: Medicine) => (
                   <tr key={medicine.id}>
                     <td>{medicine.serialNo}.</td>
                     <td>{medicine.name}</td>

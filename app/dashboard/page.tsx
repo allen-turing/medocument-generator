@@ -2,6 +2,18 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 
+interface Prescription {
+  id: string;
+  rxId: string;
+  status: string;
+  patientName: string;
+  patientAge: number | null;
+  patientGender: string | null;
+  diagnosis: string | null;
+  updatedAt: Date;
+  medicines: { id: string }[];
+}
+
 export default async function DashboardPage() {
   const session = await auth();
 
@@ -9,7 +21,7 @@ export default async function DashboardPage() {
     where: { userId: session?.user?.id },
     include: { medicines: true },
     orderBy: { updatedAt: 'desc' },
-  });
+  }) as Prescription[];
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-IN', {
