@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  password      String
+  name          String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  doctorProfile DoctorProfile?
+  prescriptions Prescription[]
+}
+
+model DoctorProfile {
+  id             String  @id @default(cuid())
+  userId         String  @unique
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  qualifications String
+  specialty      String
+  registrationId String
+  logoUrl        String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Prescription {
+  id                 String     @id @default(cuid())
+  userId             String
+  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rxId               String     @unique @default(cuid())
+  status             String     @default("DRAFT") // DRAFT or PUBLISHED
+  
+  // Patient Information
+  patientName        String
+  patientId          String?
+  patientAge         Int?
+  patientGender      String?
+  patientHeight      Int?       // in cms
+  patientWeight      Int?       // in kgs
+  prescriptionDate   DateTime   @default(now())
+  
+  // Diagnosis
+  diagnosis          String?
+  diagnosisCode      String?    // ICD Code like 5B57.Z
+  description        String?
+  additionalComments String?
+  
+  // Additional Information
+  drugAllergies      String?
+  labTests           String?
+  followUp           String?
+  doctorAdvice       String?
+  
+  // Timestamps
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  
+  // Relations
+  medicines          Medicine[]
+}
+
+model Medicine {
+  id             String       @id @default(cuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  serialNo       Int
+  name           String
+  dosage         String?
+  instructions   String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
