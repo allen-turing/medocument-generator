@@ -5,6 +5,14 @@ import { PrescriptionForm } from '@/components/PrescriptionForm';
 import { PrescriptionFormData } from '@/lib/types';
 import Link from 'next/link';
 
+interface Medicine {
+  id: string;
+  serialNo: number;
+  name: string;
+  dosage: string | null;
+  instructions: string | null;
+}
+
 interface PrescriptionPageProps {
   params: Promise<{ id: string }>;
 }
@@ -42,7 +50,7 @@ export default async function PrescriptionPage({ params }: PrescriptionPageProps
     diagnosis: prescription.diagnosis || '',
     description: prescription.description || '',
     additionalComments: prescription.additionalComments || '',
-    medicines: prescription.medicines.map((med) => ({
+    medicines: prescription.medicines.map((med: Medicine) => ({
       id: med.id,
       serialNo: med.serialNo,
       name: med.name,
